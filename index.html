@@ -107,10 +107,12 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 	<tw-storydata name="Pilgrim&#39;s Progreſs" startnode="1" creator="Twine" creator-version="2.10.0" format="SugarCube" format-version="2.37.3" ifid="462F9262-7702-43AE-87C5-9780E9A42B43" options="" tags="Singleplayer Fantasy Interactive-Fiction Story-Rich Minimalist Text-based Twine Male-protagonist Medieval" zoom="0.6" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">:root {
 	--background: light-dark(whitesmoke, #111);
 	--text: light-dark(#3d3d3d, silver);
-	
+	--text-dim: light-dark(darkgray, darkgray);
+
 	--ui-faith: light-dark(#E1EBEE, #005A9C);
 	--ui-dread: light-dark(#E8E8E8, #301934);
-	
+	--ui-named-npc: light-dark(#1773cd, dodgerblue);
+
 	--link: light-dark(darkturquoise, darkturquoise);
 	--link-hover: light-dark(turquoise, turquoise);
 	--link-active: light-dark(dodgerblue, dodgerblue);
@@ -124,11 +126,11 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 	--ui-button: light-dark(transparent, transparent);
 	--ui-button-hover: light-dark(rgba(153, 153, 153, 0.25), #444);
 
-	--ui-label: light-dark(darkgray, darkgray);
+	--ui-label: light-dark(darkgray, dimgray);
 	--ui-label-active: light-dark(goldenrod, palegoldenrod);
 	--ui-label-hover: light-dark(#3d3d3d, white);
 	--ui-label-danger: light-dark(red, red);
-	
+
 	--ui-input: light-dark(white, #333);
 	--ui-input-hover: light-dark(#eee, #eee);
 	--ui-input-focus: light-dark(#3d93f5, #3d93f5);
@@ -144,7 +146,7 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 	--ui-progress-active-line: light-dark(dodgerblue, dodgerblue);
 	--ui-progress-complete-dot: light-dark(white, white);
 	--ui-progress-complete-line: light-dark(darkturquoise, darkturquoise);
-	
+
 	--ui-scrollbar-thumb: light-dark(lightgray, #444);
 	--ui-scrollbar-track: light-dark(transparent, transparent);
 }
@@ -391,7 +393,7 @@ span[data-do-tags^="rename"] .macro-textbox + .macro-button::before {
 .passage .info,
 .passage .discovered,
 .passage .discovered + cite {
-	color: var(--ui-label);
+	color: var(--text-dim);
 }
 .passage .tag a {
 	color: var(--ui-label);
@@ -399,8 +401,8 @@ span[data-do-tags^="rename"] .macro-textbox + .macro-button::before {
 	margin: 0.2em 0.35em;
 	padding: 0 1em;
 }
-.passage .tag a::before {
-	filter: grayscale(100%) contrast(30%);
+.passage[data-passage$="book"] .tag a::before {
+	filter: brightness(0) saturate(100%) invert(41%) sepia(0%) saturate(1%) hue-rotate(28deg) brightness(94%) contrast(81%);
 }
 .passage .active.tag a {
 	color: var(--ui-label-active);
@@ -420,6 +422,7 @@ span[data-do-tags^="rename"] .macro-textbox + .macro-button::before {
 .passage .macro-linkreplace {
 	text-decoration: underline;
 	text-decoration-style: dotted;
+	text-underline-offset: 0.2em;
 }
 
 .passage ol + br,
@@ -451,10 +454,10 @@ span[data-do-tags^="rename"] .macro-textbox + .macro-button::before {
 	font-weight: 600;
 }
 .passage .named {
-	color: dodgerblue;
+	color: var(--ui-named-npc);
 }
 .passage .named > span {
-	font-variant: small-caps;	
+	font-variant: small-caps;
 }
 .passage .celestial.named {
 	color: var(--text);
@@ -890,7 +893,19 @@ html.dark-mode .passage .celestial.named:hover {
 
 html.dark-mode .passage .active.tag a::before {
 	filter: grayscale(100%) brightness(0) saturate(100%) invert(100%) sepia(22%) saturate(6001%) hue-rotate(304deg) brightness(118%) contrast(87%);
-}</style><script role="script" id="twine-user-script" type="text/twine-javascript">var settingFontNames = ["(Default)", "Dejavu Sans", "Garamond", "Courier New"];
+}</style><script role="script" id="twine-user-script" type="text/twine-javascript">Config.navigation.override = function (destinationPassage) {
+	if (passage().includes("08-CL") && 
+		destinationPassage.includes("09-CO")) {
+		var vars = State.variables;
+		var progress = Math.round(100 * vars.seenVerses.length / setup.totalVerses);
+		progress += vars.journal.length;
+
+		console.log("Progress: "+ progress +"%; Dest:"+ destinationPassage);
+		if (progress < 30) return "00-author-message";
+	}
+};
+
+var settingFontNames = ["(Default)", "Dejavu Sans", "Garamond", "Courier New"];
 var settingFontHandler = function () {
 	var $html = $("html");
 
@@ -1001,14 +1016,15 @@ Save.onLoad.add(function(save) {
 &lt;small&gt;from this world 
 to that which is to come: 
 delivered under the similitude of a&lt;/small&gt;
-&lt;div id=&quot;story-subtitle&quot;&gt;DREAM&lt;/div&gt;&lt;/h1&gt;&lt;label id=&quot;story-caption&quot;&gt;Wherein is Diſcovered,
+&lt;div id=&quot;story-subtitle&quot;&gt;DREAM&lt;/div&gt;&lt;/h1&gt;&lt;span id=&quot;story-caption&quot;&gt;Wherein is Diſcovered,
 The manner of his ſetting out,
 His Dangerous Journey; And ſafe
-Arrival at the Deſired Countrey.&lt;/label&gt;
+Arrival at the Deſired Countrey.&lt;/span&gt;
 
 By &lt;&lt;include StoryAuthor&gt;&gt;
 
 [[Begin|00-dream]]
+&lt;small class=&quot;info&quot;&gt;Adjust &#39;&#39;Settings&#39;&#39; to help reading&lt;/small&gt;
 &lt;/center&gt;</tw-passagedata><tw-passagedata pid="2" name="00-dream" tags="moment" position="550,300" size="100,100">[@] As I walked through the wilderness of this world, I lighted on a certain place where was a den, and laid me down in that place to sleep; and as I slept, I dreamed a dream. I [[dreamed , and behold,|01-FI-1]]…</tw-passagedata><tw-passagedata pid="3" name="01-FI-1" tags="moment hometown" position="675,300" size="100,100">[@]  I saw a man clothed with __rags__(Isaiah 64:6), standing in a certain place, with his face from his own house, a book in his hand, and a __great burden__ (Psalm 38:4), upon his back. 
 
 [@] I looked and saw him open the book, and read therein; and as he read, he wept and trembled; and not being able longer to contain, he brake out with a lamentable cry.
@@ -1126,8 +1142,7 @@ By &lt;&lt;include StoryAuthor&gt;&gt;
 [1] I cannot go as fast as I would, by reason of this burden that is on my back.
 
 [@] Now I saw in my dream, that just as they had ended this talk, they drew nigh to a very miry [[slough|01-SL-1-4]] that was in the midst of the plain: and they being heedless, did both fall suddenly into the bog.</tw-passagedata><tw-passagedata pid="7" name="StoryInit" tags="built-in" position="550,25" size="100,100">// Twine config
-&lt;&lt;set Config.saves.autosave = true&gt;&gt;
-&lt;&lt;set Config.saves.autoload = &quot;prompt&quot;&gt;&gt;
+&lt;&lt;set Config.saves.maxAutoSaves = 1&gt;&gt;
 &lt;&lt;set Config.addVisitedLinkClass = true&gt;&gt;
 
 // Regular expressions
@@ -1753,7 +1768,7 @@ From this little wicket-gate, and from the way thereto, hath this wicked man tur
 	&lt;&lt;/if&gt;&gt;
 	&lt;&lt;set _class to _class.join(&quot; &quot;)&gt;&gt;
 	&lt;q @class=&quot;_class&quot;&gt;_contents&lt;/q&gt;&lt;&lt;if _args[0]&gt;&gt; &lt;cite&gt;(_args[0])&lt;/cite&gt;&lt;&lt;/if&gt;&gt;&lt;&lt;/widget&gt;&gt;
-&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="59" name="Isaiah 6:2 KJV" tags="bible" position="1250,600" size="100,100">Above it stood the seraphims: each one had six wings; with twain he covered his face, and with twain he covered his feet, and with twain he did fly.</tw-passagedata><tw-passagedata pid="60" name="Revelation 5:11 KJV" tags="bible" position="1450,600" size="100,100">And I beheld, and I heard the voice of many angels round about the throne and the beasts and the elders: and the number of them was ten thousand times ten thousand, and thousands of thousands;</tw-passagedata><tw-passagedata pid="61" name="Revelation 4:4 KJV" tags="bible" position="1550,600" size="100,100">And round about the throne were four and twenty seats: and upon the seats I saw four and twenty elders sitting, clothed in white raiment; and they had on their heads crowns of gold.</tw-passagedata><tw-passagedata pid="62" name="Revelation 14:1-5 KJV" tags="bible" position="1650,600" size="100,100">And I looked, and, lo, a Lamb stood on the mount Sion, and with him an hundred forty and four thousand, having his Father’s name written in their foreheads. And I heard a voice from heaven, as the voice of many waters, and as the voice of a great thunder: and I heard the voice of harpers harping with their harps: And they sung as it were a new song before the throne, and before the four beasts, and the elders: and no man could learn that song but the hundred and forty and four thousand, which were redeemed from the earth. These are they which were not defiled with women; for they are virgins. These are they which follow the Lamb whithersoever he goeth. These were redeemed from among men, being the firstfruits unto God and to the Lamb. And in their mouth was found no guile: for they are without fault before the throne of God.</tw-passagedata><tw-passagedata pid="63" name="John 12:25 KJV" tags="bible promise" position="1750,600" size="100,100">(Jesus speaking) He that loveth his life shall lose it; and he that hateth his life in this world shall keep it unto life eternal.</tw-passagedata><tw-passagedata pid="64" name="2 Corinthians 5:2 KJV" tags="bible" position="1850,600" size="100,100">For in this we groan, earnestly desiring to be clothed upon with our house which is from heaven:</tw-passagedata><tw-passagedata pid="65" name="Isaiah 55:1-2 KJV" tags="bible" position="1950,600" size="100,100">Ho, every one that thirsteth, come ye to the waters, and he that hath no money; come ye, buy, and eat; yea, come, buy wine and milk without money and without price. Wherefore do ye spend money for that which is not bread? and your labour for that which satisfieth not? hearken diligently unto me, and eat ye that which is good, and let your soul delight itself in fatness.</tw-passagedata><tw-passagedata pid="66" name="John 6:37 KJV" tags="bible promise" position="1050,700" size="100,100">(Jesus speaking) All that the Father giveth me shall come to me; and him that cometh to me I will in no wise cast out.</tw-passagedata><tw-passagedata pid="67" name="John 7:37 KJV" tags="bible" position="1150,700" size="100,100">In the last day, that great day of the feast, Jesus stood and cried, saying, If any man thirst, let him come unto me, and drink.</tw-passagedata><tw-passagedata pid="68" name="Revelation 21:6 KJV" tags="bible promise" position="1250,700" size="100,100">And he said unto me, It is done. I am Alpha and Omega, the beginning and the end. I will give unto him that is athirst of the fountain of the water of life freely.</tw-passagedata><tw-passagedata pid="69" name="Revelation 22:17 KJV" tags="bible promise" position="1350,700" size="100,100">And the Spirit and the bride say, Come. And let him that heareth say, Come. And let him that is athirst come. And whosoever will, let him take the water of life freely.</tw-passagedata><tw-passagedata pid="70" name="Psalm 40:2 KJV" tags="bible prayer" position="1450,700" size="100,100">He brought me up also out of an horrible pit, out of the miry clay, and set my feet upon a rock, and established my goings.</tw-passagedata><tw-passagedata pid="71" name="Isaiah 35:3-4 KJV" tags="bible promise" position="1550,700" size="100,100">Strengthen ye the weak hands, and confirm the feeble knees. Say to them that are of a fearful heart, Be strong, fear not: behold, your God will come with vengeance, even God with a recompence; he will come and save you.</tw-passagedata><tw-passagedata pid="72" name="1 Samuel 12:23 KJV" tags="bible prayer" position="1650,700" size="100,100">Moreover as for me, God forbid that I should sin against the Lord in ceasing to pray for you: but I will teach you the good and the right way:</tw-passagedata><tw-passagedata pid="73" name="1 Corinthians 7:29 KJV" tags="bible" position="1750,700" size="100,100">But this I say, brethren, the time is short: it remaineth, that both they that have wives be as though they had none;</tw-passagedata><tw-passagedata pid="74" name="Exodus 19:16 KJV" tags="bible" position="1850,700" size="100,100">And it came to pass on the third day in the morning, that there were thunders and lightnings, and a thick cloud upon the mount, and the voice of the trumpet exceeding loud; so that all the people that was in the camp trembled.</tw-passagedata><tw-passagedata pid="75" name="Hebrews 12:21 KJV" tags="bible" position="1950,700" size="100,100">And so terrible was the sight, that Moses said, I exceedingly fear and quake.</tw-passagedata><tw-passagedata pid="76" name="Hebrews 12:25 KJV" tags="bible" position="1050,800" size="100,100">See that ye refuse not him that speaketh. For if they escaped not who refused him that spake on earth, much more shall not we escape, if we turn away from him that speaketh from heaven:</tw-passagedata><tw-passagedata pid="77" name="Hebrews 10:38 KJV" tags="bible" position="1150,800" size="100,100">Now the just shall live by faith; but if any man draw back, my soul shall have no pleasure in him.</tw-passagedata><tw-passagedata pid="78" name="Matthew 12:31 KJV" tags="bible promise" position="1250,800" size="100,100">(Jesus speaking) Wherefore I say unto you, All manner of sin and blasphemy shall be forgiven unto men: but the blasphemy against the Holy Ghost shall not be forgiven unto men.</tw-passagedata><tw-passagedata pid="79" name="John 20:27 KJV" tags="bible" position="1350,800" size="100,100">(Jesus speaking) Then saith he to Thomas, reach hither thy finger, and behold my hands; and reach hither thy hand, and thrust it into my side: and be not faithless, but believing.</tw-passagedata><tw-passagedata pid="80" name="1 John 4:5 KJV" tags="bible" position="1450,800" size="100,100">They are of the world: therefore speak they of the world, and the world heareth them.</tw-passagedata><tw-passagedata pid="81" name="Galatians 6:12 KJV" tags="bible" position="1550,800" size="100,100">As many as desire to make a fair shew in the flesh, they constrain you to be circumcised; only lest they should suffer persecution for the cross of Christ.</tw-passagedata><tw-passagedata pid="82" name="Luke 13:24 KJV" tags="bible" position="1650,800" size="100,100">(Jesus speaking) Strive to enter in at the strait gate: for many, I say unto you, will seek to enter in, and shall not be able.</tw-passagedata><tw-passagedata pid="83" name="Hebrews 11:25-26 KJV" tags="bible" position="1750,800" size="100,100">Choosing rather to suffer affliction with the people of God, than to enjoy the pleasures of sin for a season; Esteeming the reproach of Christ greater riches than the treasures in Egypt: for he had respect unto the recompence of the reward.</tw-passagedata><tw-passagedata pid="84" name="Mark 8:38 KJV" tags="bible promise" position="1850,800" size="100,100">(Jesus speaking) Whosoever therefore shall be ashamed of me and of my words in this adulterous and sinful generation; of him also shall the Son of man be ashamed, when he cometh in the glory of his Father with the holy angels.</tw-passagedata><tw-passagedata pid="85" name="Matthew 10:39 KJV" tags="bible promise" position="1950,800" size="100,100">(Jesus speaking) He that findeth his life shall lose it: and he that loseth his life for my sake shall find it.</tw-passagedata><tw-passagedata pid="86" name="Galatians 4:21-27 KJV" tags="bible" position="1050,900" size="100,100">Tell me, ye that desire to be under the law, do ye not hear the law? For it is written, that Abraham had two sons, the one by a bondmaid, the other by a freewoman. But he who was of the bondwoman was born after the flesh; but he of the freewoman was by promise. Which things are an allegory: for these are the two covenants; the one from the mount Sinai, which gendereth to bondage, which is Agar. For this Agar is mount Sinai in Arabia, and answereth to Jerusalem which now is, and is in bondage with her children. But Jerusalem which is above is free, which is the mother of us all. For it is written, Rejoice, thou barren that bearest not; break forth and cry, thou that travailest not: for the desolate hath many more children than she which hath an husband.</tw-passagedata><tw-passagedata pid="87" name="Galatians 3:10 KJV" tags="bible" position="1150,900" size="100,100">For as many as are of the works of the law are under the curse: for it is written, Cursed is every one that continueth not in all things which are written in the book of the law to do them.</tw-passagedata><tw-passagedata pid="88" name="Psalm 2:12 KJV" tags="bible" position="1250,900" size="100,100">Kiss the Son, lest he be angry, and ye perish from the way, when his wrath is kindled but a little. Blessed are all they that put their trust in him.</tw-passagedata><tw-passagedata pid="89" name="02-GA-1-21" tags="moment gate" position="425,1000" size="100,100">[@] Now, over the gate there was written,
+&lt;&lt;/nobr&gt;&gt;</tw-passagedata><tw-passagedata pid="59" name="Isaiah 6:2 KJV" tags="bible" position="1250,600" size="100,100">Above it stood the seraphims: each one had six wings; with twain he covered his face, and with twain he covered his feet, and with twain he did fly.</tw-passagedata><tw-passagedata pid="60" name="Revelation 5:11 KJV" tags="bible" position="1450,600" size="100,100">And I beheld, and I heard the voice of many angels round about the throne and the beasts and the elders: and the number of them was ten thousand times ten thousand, and thousands of thousands;</tw-passagedata><tw-passagedata pid="61" name="Revelation 4:4 KJV" tags="bible" position="1550,600" size="100,100">And round about the throne were four and twenty seats: and upon the seats I saw four and twenty elders sitting, clothed in white raiment; and they had on their heads crowns of gold.</tw-passagedata><tw-passagedata pid="62" name="Revelation 14:1-5 KJV" tags="bible" position="1650,600" size="100,100">And I looked, and, lo, a Lamb stood on the mount Sion, and with him an hundred forty and four thousand, having his Father’s name written in their foreheads. And I heard a voice from heaven, as the voice of many waters, and as the voice of a great thunder: and I heard the voice of harpers harping with their harps: And they sung as it were a new song before the throne, and before the four beasts, and the elders: and no man could learn that song but the hundred and forty and four thousand, which were redeemed from the earth. These are they which were not defiled with women; for they are virgins. These are they which follow the Lamb whithersoever he goeth. These were redeemed from among men, being the firstfruits unto God and to the Lamb. And in their mouth was found no guile: for they are without fault before the throne of God.</tw-passagedata><tw-passagedata pid="63" name="John 12:25 KJV" tags="bible promise" position="1750,600" size="100,100">(Jesus speaking) He that loveth his life shall lose it; and he that hateth his life in this world shall keep it unto life eternal.</tw-passagedata><tw-passagedata pid="64" name="2 Corinthians 5:2 KJV" tags="bible" position="1850,600" size="100,100">For in this we groan, earnestly desiring to be clothed upon with our house which is from heaven:</tw-passagedata><tw-passagedata pid="65" name="Isaiah 55:1-2 KJV" tags="bible" position="1950,600" size="100,100">Ho, every one that thirsteth, come ye to the waters, and he that hath no money; come ye, buy, and eat; yea, come, buy wine and milk without money and without price. Wherefore do ye spend money for that which is not bread? and your labour for that which satisfieth not? hearken diligently unto me, and eat ye that which is good, and let your soul delight itself in fatness.</tw-passagedata><tw-passagedata pid="66" name="John 6:37 KJV" tags="bible promise" position="1050,700" size="100,100">(Jesus speaking) All that the Father giveth me shall come to me; and him that cometh to me I will in no wise cast out.</tw-passagedata><tw-passagedata pid="67" name="John 7:37 KJV" tags="bible" position="1150,700" size="100,100">In the last day, that great day of the feast, Jesus stood and cried, saying, If any man thirst, let him come unto me, and drink.</tw-passagedata><tw-passagedata pid="68" name="Revelation 21:6 KJV" tags="bible promise" position="1250,700" size="100,100">And he said unto me, It is done. I am Alpha and Omega, the beginning and the end. I will give unto him that is athirst of the fountain of the water of life freely.</tw-passagedata><tw-passagedata pid="69" name="Revelation 22:17 KJV" tags="bible promise" position="1350,700" size="100,100">And the Spirit and the bride say, Come. And let him that heareth say, Come. And let him that is athirst come. And whosoever will, let him take the water of life freely.</tw-passagedata><tw-passagedata pid="70" name="Psalm 40:2 KJV" tags="bible prayer" position="1450,700" size="100,100">He brought me up also out of an horrible pit, out of the miry clay, and set my feet upon a rock, and established my goings.</tw-passagedata><tw-passagedata pid="71" name="Isaiah 35:3-4 KJV" tags="bible promise" position="1550,700" size="100,100">Strengthen ye the weak hands, and confirm the feeble knees. Say to them that are of a fearful heart, Be strong, fear not: behold, your God will come with vengeance, even God with a recompence; he will come and save you.</tw-passagedata><tw-passagedata pid="72" name="1 Samuel 12:23 KJV" tags="bible prayer" position="1650,700" size="100,100">Moreover as for me, God forbid that I should sin against the Lord in ceasing to pray for you: but I will teach you the good and the right way:</tw-passagedata><tw-passagedata pid="73" name="1 Corinthians 7:29 KJV" tags="bible" position="1750,700" size="100,100">But this I say, brethren, the time is short: it remaineth, that both they that have wives be as though they had none;</tw-passagedata><tw-passagedata pid="74" name="Exodus 19:16 KJV" tags="bible" position="1850,700" size="100,100">And it came to pass on the third day in the morning, that there were thunders and lightnings, and a thick cloud upon the mount, and the voice of the trumpet exceeding loud; so that all the people that was in the camp trembled.</tw-passagedata><tw-passagedata pid="75" name="Hebrews 12:21 KJV" tags="bible" position="1950,700" size="100,100">And so terrible was the sight, that Moses said, I exceedingly fear and quake.</tw-passagedata><tw-passagedata pid="76" name="Hebrews 12:25 KJV" tags="bible" position="1050,800" size="100,100">See that ye refuse not him that speaketh. For if they escaped not who refused him that spake on earth, much more shall not we escape, if we turn away from him that speaketh from heaven:</tw-passagedata><tw-passagedata pid="77" name="Hebrews 10:38 KJV" tags="bible promise" position="1150,800" size="100,100">Now the just shall live by faith; but if any man draw back, my soul shall have no pleasure in him.</tw-passagedata><tw-passagedata pid="78" name="Matthew 12:31 KJV" tags="bible promise" position="1250,800" size="100,100">(Jesus speaking) Wherefore I say unto you, All manner of sin and blasphemy shall be forgiven unto men: but the blasphemy against the Holy Ghost shall not be forgiven unto men.</tw-passagedata><tw-passagedata pid="79" name="John 20:27 KJV" tags="bible" position="1350,800" size="100,100">(Jesus speaking) Then saith he to Thomas, reach hither thy finger, and behold my hands; and reach hither thy hand, and thrust it into my side: and be not faithless, but believing.</tw-passagedata><tw-passagedata pid="80" name="1 John 4:5 KJV" tags="bible" position="1450,800" size="100,100">They are of the world: therefore speak they of the world, and the world heareth them.</tw-passagedata><tw-passagedata pid="81" name="Galatians 6:12 KJV" tags="bible" position="1550,800" size="100,100">As many as desire to make a fair shew in the flesh, they constrain you to be circumcised; only lest they should suffer persecution for the cross of Christ.</tw-passagedata><tw-passagedata pid="82" name="Luke 13:24 KJV" tags="bible" position="1650,800" size="100,100">(Jesus speaking) Strive to enter in at the strait gate: for many, I say unto you, will seek to enter in, and shall not be able.</tw-passagedata><tw-passagedata pid="83" name="Hebrews 11:25-26 KJV" tags="bible" position="1750,800" size="100,100">Choosing rather to suffer affliction with the people of God, than to enjoy the pleasures of sin for a season; Esteeming the reproach of Christ greater riches than the treasures in Egypt: for he had respect unto the recompence of the reward.</tw-passagedata><tw-passagedata pid="84" name="Mark 8:38 KJV" tags="bible promise" position="1850,800" size="100,100">(Jesus speaking) Whosoever therefore shall be ashamed of me and of my words in this adulterous and sinful generation; of him also shall the Son of man be ashamed, when he cometh in the glory of his Father with the holy angels.</tw-passagedata><tw-passagedata pid="85" name="Matthew 10:39 KJV" tags="bible promise" position="1950,800" size="100,100">(Jesus speaking) He that findeth his life shall lose it: and he that loseth his life for my sake shall find it.</tw-passagedata><tw-passagedata pid="86" name="Galatians 4:21-27 KJV" tags="bible" position="1050,900" size="100,100">Tell me, ye that desire to be under the law, do ye not hear the law? For it is written, that Abraham had two sons, the one by a bondmaid, the other by a freewoman. But he who was of the bondwoman was born after the flesh; but he of the freewoman was by promise. Which things are an allegory: for these are the two covenants; the one from the mount Sinai, which gendereth to bondage, which is Agar. For this Agar is mount Sinai in Arabia, and answereth to Jerusalem which now is, and is in bondage with her children. But Jerusalem which is above is free, which is the mother of us all. For it is written, Rejoice, thou barren that bearest not; break forth and cry, thou that travailest not: for the desolate hath many more children than she which hath an husband.</tw-passagedata><tw-passagedata pid="87" name="Galatians 3:10 KJV" tags="bible" position="1150,900" size="100,100">For as many as are of the works of the law are under the curse: for it is written, Cursed is every one that continueth not in all things which are written in the book of the law to do them.</tw-passagedata><tw-passagedata pid="88" name="Psalm 2:12 KJV" tags="bible" position="1250,900" size="100,100">Kiss the Son, lest he be angry, and ye perish from the way, when his wrath is kindled but a little. Blessed are all they that put their trust in him.</tw-passagedata><tw-passagedata pid="89" name="02-GA-1-21" tags="moment gate" position="425,1000" size="100,100">[@] Now, over the gate there was written,
 &gt; Knock, and it shall be __opened__ (Matthew 7:7) unto you.
 He knocked, therefore, more than once or twice, saying,
 
@@ -2329,8 +2344,8 @@ And with that I saw many catched up and __carried away__ (1 Thessalonians 4:16-1
 
 [@] Thus they discoursed together till late at night; and after they had committed themselves to their Lord for protection, they betook themselves to rest. The pilgrim they laid in a [[large upper chamber|03-CH-1]], whose window opened towards the sun-rising. </tw-passagedata><tw-passagedata pid="160" name="Hebrews 11:15-16 KJV" tags="bible promise" position="1550,1625" size="100,100">And truly, if they had been mindful of that country from whence they came out, they might have had opportunity to have returned. But now they desire a better country, that is, an heavenly: wherefore God is not ashamed to be called their God: for he hath prepared for them a city.</tw-passagedata><tw-passagedata pid="161" name="Romans 7:15,21 KJV" tags="bible" position="1650,1625" size="100,100">For that which I do I allow not: for what I would, that do I not; but what I hate, that do I. I find then a law, that, when I would do good, evil is present with me.</tw-passagedata><tw-passagedata pid="162" name="Genesis 19:14 KJV" tags="bible" position="1750,1625" size="100,100">And Lot went out, and spake unto his sons in law, which married his daughters, and said, Up, get you out of this place; for the Lord will destroy this city. But he seemed as one that mocked unto his sons in law. </tw-passagedata><tw-passagedata pid="163" name="1 John, 3:12 KJV" tags="bible" position="1850,1625" size="100,100">Not as Cain, who was of that wicked one, and slew his brother. And wherefore slew he him? Because his own works were evil, and his brother&#39;s righteous.</tw-passagedata><tw-passagedata pid="164" name="Ezekiel 3:19 KJV" tags="bible promise" position="1950,1625" size="100,100">Yet if thou warn the wicked, and he turn not from his wickedness, nor from his wicked way, he shall die in his iniquity; but thou hast delivered thy soul.</tw-passagedata><tw-passagedata pid="165" name="Hebrews 2:14-15 KJV" tags="bible" position="1050,1725" size="100,100">Forasmuch then as the children are partakers of flesh and blood, he also himself likewise took part of the same; that through death he might destroy him that had the power of death, that is, the devil; And deliver them who through fear of death were all their lifetime subject to bondage.</tw-passagedata><tw-passagedata pid="166" name="1 Samuel 2:8 KJV" tags="bible promise" position="1150,1725" size="100,100">He raiseth up the poor out of the dust, and lifteth up the beggar from the dunghill, to set them among princes, and to make them inherit the throne of glory: for the pillars of the earth are the Lord’s, and he hath set the world upon them.</tw-passagedata><tw-passagedata pid="167" name="Psalm 113:7 KJV" tags="bible promise" position="1250,1725" size="100,100">He raiseth up the poor out of the dust, and lifteth the needy out of the dunghill;</tw-passagedata><tw-passagedata pid="168" name="03-CH-1" tags="moment lodge" position="425,1650" size="100,100">[@] The name of the chamber was Peace, where he slept till break of day, and then he awoke and sang, 
 
-[1] //♪&lt;&lt;journal &quot;Peace in Difficulty&quot;&gt;&gt;♫//
-
+[1] 
+&gt; //♪&lt;&lt;journal &quot;Peace in Difficulty&quot;&gt;&gt;♫//
 [@] So in the morning they all got up; and, after some more discourse, they told him that he should not depart till they had shown him the rarities of that place.
 &lt;&lt;include &quot;03-RA-1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="169" name="Hebrews 11:33-34 KJV" tags="bible promise" position="1350,1725" size="100,100">Who through faith subdued kingdoms, wrought righteousness, obtained promises, stopped the mouths of lions, Quenched the violence of fire, escaped the edge of the sword, out of weakness were made strong, waxed valiant in fight, turned to flight the armies of the aliens.</tw-passagedata><tw-passagedata pid="170" name="03-RA-1" tags="optional" position="425,1750" size="100,100">* And first they had him into [[the study|03-ST-1-41-42-43]]
 * The next day they took him, and had him into [[the armory|03-AR-1-41-42-43]]
@@ -2713,7 +2728,7 @@ So __I shut mine eyes__ (Job 31:1), because I would not be bewitched with her lo
 [51] What? why, he objected against religion itself.
 &gt; [56] It was a pitiful, low, sneaking business for a man to mind religion. A tender conscience was an unmanly thing; and that for a man to watch over his words and ways, so as to tie up himself from that hectoring liberty that the brave spirits of the times accustomed themselves unto, would make him the ridicule of the times.
 &gt; 
-&gt; [56] I objected also, that but __few of the mighty, rich, or wise__ (1 Corinthians 1:26;  John 7:48), were ever of thy opinion; nor any of them neither, before they were __persuaded to be fools__ (1 Corinthians 3:18;), and to be of a voluntary fondness to __venture the loss__ (Philippians 3:7-9)  of all for nobody knows what.
+&gt; [56] I objected also, that but __few of the mighty, rich, or wise__ (1 Corinthians 1:26;  John 7:48), were ever of thy opinion; nor any of them neither, before they were __persuaded to be fools__ (1 Corinthians 3:18), and to be of a voluntary fondness to __venture the loss__ (Philippians 3:7-9)  of all for nobody knows what.
 &gt;
 &gt; [56] I, moreover, objected the base and low estate and condition of those that were chiefly the pilgrims of the times in which they lived; also their ignorance and want of understanding in all natural science.
 [51] Yea, he did hold me to it at that rate also, about a great many more things than here I relate; as, that…
@@ -3699,7 +3714,7 @@ no, not to another man’s person; much more, then, are we forbidden to take his
 [1] What, shall we talk farther with him, or outgo him at present, and so leave him to think of what he hath heard already, and then stop again for him afterwards, and see if by degrees we can do any good to him?
 
 [71] 
-&gt; &lt;&lt;journal &quot;A fool&#39;s hope&quot;&gt;&gt;
+&gt; &lt;&lt;journal &quot;Ignorance I&quot;&gt;&gt;
 [71] It is not good, I think, to say so to him all at once; let us pass him by, if you will, and talk to him anon, even as he is able to bear it. 
 
 [@] So they both [[went on|09-LA-1-71-92]], and Ignorance he came after. </tw-passagedata><tw-passagedata pid="355" name="Proverbs 26:12 KJV" tags="bible" position="1075,5125" size="100,100">Seest thou a man wise in his own conceit? there is more hope of a fool than of him.</tw-passagedata><tw-passagedata pid="356" name="Ecclesiastes 10:3 KJV" tags="bible" position="1175,5125" size="100,100">Yea also, when he that is a fool walketh by the way, his wisdom faileth him, and he saith to every one that he is a fool.</tw-passagedata><tw-passagedata pid="357" name="Matthew 12:45 KJV" tags="bible" position="1275,5125" size="100,100">(Jesus speaking) Then goeth he, and taketh with himself seven other spirits more wicked than himself, and they enter in and dwell there: and the last state of that man is worse than the first. Even so shall it be also unto this wicked generation.</tw-passagedata><tw-passagedata pid="358" name="Proverbs 5:2 KJV" tags="bible" position="1375,5125" size="100,100">His own iniquities shall take the wicked himself, and he shall be holden with the cords of his sins.</tw-passagedata><tw-passagedata pid="359" name="09-EV-1-71-91" tags="" position="800,5500" size="100,100">* Hopeful thought of [[his former life|09-FO-1-71]] in Vanity Fair;
@@ -3713,7 +3728,6 @@ no, not to another man’s person; much more, then, are we forbidden to take his
 
 [@] But he did not perfectly see his face, for he did hang his head like a thief that is found; but being gone past, Hopeful looked after him, and espied on his back a paper with this inscription, 
 &gt; Wanton professor, and damnable apostate.
-
 [@] Then said Christian to his fellow, 
 
 [1] Now I call to remembrance that which was told me of a thing that happened to a good man hereabout. The name of the man was [[Little-Faith|09-DE-1-71-93-94-95-96]]; but a good man, and he dwelt in the town of Sincere.</tw-passagedata><tw-passagedata pid="361" name="09-DE-1-71-93-94-95-96" tags="moment lane" position="675,5125" size="100,100">[1] The thing was this. At the entering in at this passage, there comes down from Broadway-gate, a lane, called Dead-Man’s lane; so called because of the murders that are commonly done there; and this Little-Faith going on pilgrimage, as we do now, chanced to sit down there and sleep.
@@ -4265,7 +4279,7 @@ Therefore this faith is deceitful, even such as will leave thee under wrath in t
 [91] You go so fast I cannot keep pace with you; do you go on before: I must stay a while behind.
 
 [@] Then they said,
-&gt; &lt;&lt;journal &quot;Rebuke Ignorance&quot;&gt;&gt;
+&gt; &lt;&lt;journal &quot;Ignorance II&quot;&gt;&gt;
 [@] Then Christian addressed himself thus to his fellow:
 
 [1] Well, come, my good Hopeful, I perceive that thou and I must walk by ourselves again. 
@@ -4548,7 +4562,7 @@ The King then commanded,
 
 [91] (…)
 
-[@] …but the man answered never a word. So they told the King, but he would not come down to see him, but commanded the two shining ones, that conducted Christian and Hopeful to the city, to go out and take Ignorance, and bind him hand and foot, and [[have him away.|10-BY-91]]</tw-passagedata><tw-passagedata pid="482" name="00-author-message" tags="" position="1350,150" size="100,100">[@] Now, reader, I have told my dream to thee,
+[@] …but the man answered never a word. So they told the King, but he would not come down to see him, but commanded the two shining ones, that conducted Christian and Hopeful to the city, to go out and take Ignorance, and bind him hand and foot, and [[have him away.|10-BY-91]]</tw-passagedata><tw-passagedata pid="482" name="00-author-message" tags="moment" position="1350,150" size="100,100">&lt;h2&gt;[@]&lt;/h2&gt; Now, reader, I have told my dream to thee,
 
 See if thou canst interpret it to me,
 Or to thyself, or neighbor: but take heed
@@ -4788,7 +4802,7 @@ Lest they, for trespassing, his prisoners are,
 Whose castle’s Doubting, and whose name’s Despair.</tw-passagedata><tw-passagedata pid="502" name="Clear hill" tags="journal" position="300,4825" size="100,100">Thus by the shepherds secrets are reveal’d,
 Which from all other men are kept concealed:
 Come to the shepherds then, if you would see
-Things deep, things hid, and that mysterious be.</tw-passagedata><tw-passagedata pid="503" name="A fool&#39;s hope" tags="journal" position="300,5125" size="100,100">Let Ignorance a little while now muse
+Things deep, things hid, and that mysterious be.</tw-passagedata><tw-passagedata pid="503" name="Ignorance I" tags="journal" position="300,5125" size="100,100">Let Ignorance a little while now muse
 On what is said, and let him not refuse
 Good counsel to embrace, lest he remain
 Still ignorant of what’s the chiefest gain.
@@ -4810,7 +4824,7 @@ Keeps them awake, and that in spite of hell. </tw-passagedata><tw-passagedata pi
 
 Lord, I have heard that thou art a merciful God, and hast ordained that thy Son Jesus Christ should be the Saviour of the world; and moreover, that thou art willing to bestow him upon such a poor sinner as I am-and I am a sinner indeed.
 
-Lord, take therefore this opportunity, and magnify thy grace in the salvation of my soul, through thy Son Jesus Christ. Amen. </tw-passagedata><tw-passagedata pid="508" name="Rebuke Ignorance" tags="journal" position="300,5650" size="100,100">Well, Ignorance, wilt thou yet foolish be,
+Lord, take therefore this opportunity, and magnify thy grace in the salvation of my soul, through thy Son Jesus Christ. Amen. </tw-passagedata><tw-passagedata pid="508" name="Ignorance II" tags="journal" position="300,5650" size="100,100">Well, Ignorance, wilt thou yet foolish be,
 To slight good counsel, ten times given thee?
 And if thou yet refuse it, thou shalt know,
 Ere long, the evil of thy doing so.
@@ -4821,7 +4835,7 @@ The loser, Ignorance, I’ll warrant thee.</tw-passagedata><tw-passagedata pid="
 
 [@] Then I saw that there was a way to hell, even from the gate of heaven, as well as from the City of Destruction.
 
-[@] So I awoke, and behold it was a dream[[.|00-author-message]] </tw-passagedata><tw-passagedata pid="510" name="widget-locate" tags="widget" position="50,400" size="100,100">&lt;&lt;nobr&gt;&gt;
+[@] So I awoke, and behold it was [[a dream.|00-author-message]] </tw-passagedata><tw-passagedata pid="510" name="widget-locate" tags="widget" position="50,400" size="100,100">&lt;&lt;nobr&gt;&gt;
 &lt;&lt;widget &quot;locate&quot;&gt;&gt;
 	&lt;&lt;if def _args[0] and $pilgrim.hasOwnProperty(_args[0])&gt;&gt;
 		&lt;&lt;set _npc to _args[0]&gt;&gt;
