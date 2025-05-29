@@ -1,2 +1,2 @@
 # Initial release
-- Pilgrim Progress part I by John Bunyan in SugarCube 2.x format
+- The Pilgrim Progrefs (1678) by John Bunyan in SugarCube 2.x format
