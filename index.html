@@ -1321,7 +1321,7 @@ By &lt;&lt;include StoryAuthor&gt;&gt;
     &quot;103&quot;: &quot;Men-on-walls&quot;,
 //	&quot;@&quot;: &quot;Narrator&quot;
 }&gt;&gt;
-&lt;&lt;run memorize(&quot;npcNames&quot;, $npcNames)&gt;&gt;</tw-passagedata><tw-passagedata pid="9" name="StorySubtitle" tags="built-in" position="300,25" size="100,100">from this world to that which is to come: delivered under the similitude of a dream</tw-passagedata><tw-passagedata pid="10" name="StoryAuthor" tags="built-in" position="425,25" size="100,100">[[John Bunyan|00-credits]]</tw-passagedata><tw-passagedata pid="11" name="StoryTitle" tags="built-in" position="175,25" size="100,100">The Pilgrim&#39;s Progreſs</tw-passagedata><tw-passagedata pid="12" name="PassageHeader" tags="built-in" position="800,25" size="100,100">&lt;&lt;nobr&gt;&gt;
+&lt;&lt;run memorize(&quot;npcNames&quot;, $npcNames)&gt;&gt;</tw-passagedata><tw-passagedata pid="9" name="StorySubtitle" tags="built-in" position="300,25" size="100,100">from this world to that which is to come: delivered under the similitude of a dream</tw-passagedata><tw-passagedata pid="10" name="StoryAuthor" tags="built-in" position="425,25" size="100,100">[[John Bunyan|00-credits]]</tw-passagedata><tw-passagedata pid="11" name="StoryTitle" tags="built-in" position="175,25" size="100,100">Pilgrim&#39;s Progreſs</tw-passagedata><tw-passagedata pid="12" name="PassageHeader" tags="built-in" position="800,25" size="100,100">&lt;&lt;nobr&gt;&gt;
 &lt;&lt;if tags().includes(&quot;moment&quot;)&gt;&gt;
 	&lt;&lt;include &quot;ui-clues&quot;&gt;&gt;
 &lt;&lt;/if&gt;&gt;
@@ -1426,7 +1426,7 @@ By &lt;&lt;include StoryAuthor&gt;&gt;
 
 	&lt;&lt;set _names to Object.keys($npcNames)&gt;&gt;
 	&lt;&lt;if ndef _names or _names.length is 0&gt;&gt;
-		&lt;span class=&quot;info&quot;&gt;There is none.&lt;/span&gt;&lt;br&gt;
+		&lt;span class=&quot;info&quot;&gt;&lt;/span&gt;&lt;br&gt;
 	&lt;&lt;else&gt;&gt;
 		&lt;span class=&quot;info&quot;&gt;Displaying &lt;&lt;=_names.length&gt;&gt; name(s).&lt;/span&gt;&lt;br&gt;
 		&lt;&lt;for _person range setup.npcs&gt;&gt;
@@ -1665,7 +1665,8 @@ From this little wicket-gate, and from the way thereto, hath this wicked man tur
 &lt;&lt;/do&gt;&gt;
 &lt;&lt;do tag &quot;verse&quot;&gt;&gt;
 	&lt;&lt;if $seenVerses.length is 0&gt;&gt;
-		&lt;span class=&quot;info&quot;&gt;The book lays still.&lt;br&gt;If that thou wilt not read, let it alone.&lt;/span&gt;&lt;br&gt;
+		&lt;span class=&quot;info&quot;&gt;The book lays still.&lt;br&gt;
+        &lt;q&gt;If that thou wilt not read, let it alone.&lt;/q&gt; &lt;&lt;include &quot;StoryAuthor&quot;&gt;&gt;&lt;/span&gt;&lt;br&gt;
 	&lt;&lt;else&gt;&gt;
 		&lt;&lt;set _verses to []&gt;&gt;
 		&lt;&lt;if def _verse_tag&gt;&gt;
@@ -4614,7 +4615,6 @@ I know not but ‘t will make me [[dream again|00-dream]].</tw-passagedata><tw-p
 		&lt;&lt;set $placeNames[$rename_place] to _input_name&gt;&gt;
 		&lt;&lt;run memorize(&quot;placeNames&quot;, $placeNames)&gt;&gt;
 	&lt;&lt;/if&gt;&gt;
-
 	&lt;&lt;for _stage range setup.stage&gt;&gt;
 	&lt;&lt;if _stage.includesAny($pilgrim[_npc])&gt;&gt;
 &lt;section id=&quot;stage&quot;&gt;
@@ -4849,7 +4849,8 @@ The loser, Ignorance, I’ll warrant thee.</tw-passagedata><tw-passagedata pid="
 &lt;div class=&quot;header&quot;&gt;&lt;/div&gt;
 &lt;&lt;do tag &quot;journal&quot;&gt;&gt;
 	&lt;&lt;if $journal.length is 0&gt;&gt;
-		&lt;span class=&quot;info&quot;&gt;You found nothing but empty parchments.&lt;/span&gt;&lt;br&gt;
+		&lt;span class=&quot;info&quot;&gt;&lt;q&gt;God speaketh to him; and happy is he&lt;br&gt;
+That finds the light and grace that in them be.&lt;/q&gt; &lt;&lt;include &quot;StoryAuthor&quot;&gt;&gt;&lt;/span&gt;&lt;br&gt;
 	&lt;&lt;else&gt;&gt;
 		&lt;&lt;set _entries to $journal&gt;&gt;
 		&lt;&lt;if _entries.length gt 0&gt;&gt;
