@@ -109,8 +109,7 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 	--text: light-dark(#3d3d3d, silver);
 	--text-dim: light-dark(darkgray, darkgray);
 
-	--ui-faith: light-dark(#E1EBEE, #005A9C);
-	--ui-dread: light-dark(#E8E8E8, #301934);
+	--ui-waters: light-dark(#E1EBEE, saddlebrown);
 	--ui-named-npc: light-dark(#1773cd, dodgerblue);
 
 	--link: light-dark(darkturquoise, darkturquoise);
@@ -833,7 +832,7 @@ html[data-outlines] textarea:focus,
 	z-index: 0;
 }
 .waves {
-	color: var(--ui-dread);
+	color: var(--ui-waters);
 	width: 100%;
 	height:5vh;
 	margin-bottom:-7px; /*Fix for safari gap*/
@@ -844,13 +843,7 @@ html[data-outlines] textarea:focus,
 	top: -19px;
 }
 #ui-bar-body {
-	background: var(--ui-dread);
-}
-html.new-life .waves {
-	color: var(--ui-faith);
-}
-html.new-life #ui-bar-body {
-	background: var(--ui-faith);
+	background: var(--ui-waters);
 }
 
 #ui-bar.stowed #ui-bar-body {
@@ -4704,15 +4697,7 @@ I know not but ‘t will make me [[dream again|00-dream]].</tw-passagedata><tw-p
 	&lt;&lt;/if&gt;&gt;\
 &lt;&lt;/widget&gt;&gt;</tw-passagedata><tw-passagedata pid="486" name="StoryBanner" tags="built-in" position="50,25" size="100,100">&lt;&lt;nobr&gt;&gt;
 &lt;&lt;do tag &quot;ui-bar-fill&quot;&gt;&gt;
-	&lt;&lt;if $metNPCs.includes(&quot;Α&quot;)&gt;&gt;
-		&lt;&lt;script&gt;&gt;
-			$(&quot;html&quot;).addClass(&quot;new-life&quot;);
-		&lt;&lt;/script&gt;&gt;
-		&lt;&lt;set _empty to Math.round(100 * (1 - $seenVerses.length / setup.totalVerses)) - $journal.length&gt;&gt;
-		&lt;&lt;if _empty lt 0&gt;&gt;&lt;&lt;set _empty to 0&gt;&gt;&lt;&lt;/if&gt;&gt;
-	&lt;&lt;else&gt;&gt;
-		&lt;&lt;set _empty to Math.round(100 * ($seenVerses.length / setup.totalVerses))&gt;&gt;
-	&lt;&lt;/if&gt;&gt;
+	&lt;&lt;set _empty to Math.round(100 * ($seenVerses.length / setup.totalVerses)) + $journal.length&gt;&gt;
 	&lt;&lt;set _empty to &quot;height: &quot;+ _empty + &quot;vh;&quot;&gt;&gt;
 	&lt;div class=&quot;ui-faith&quot;&gt;
 		&lt;span class=&quot;empty&quot; @style=&quot;_empty&quot;&gt;&lt;/span&gt;
