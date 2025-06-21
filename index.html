@@ -1925,6 +1925,9 @@ From this little wicket-gate, and from the way thereto, hath this wicked man tur
 					&lt;&lt;run _verses.push(_v)&gt;&gt;
 				&lt;&lt;/if&gt;&gt;
 			&lt;&lt;/for&gt;&gt;
+			&lt;&lt;if _verses.length eq 0&gt;&gt;
+				&lt;&lt;set _verses to $seenVerses&gt;&gt;
+			&lt;&lt;/if&gt;&gt;
 		&lt;&lt;else&gt;&gt;
 			&lt;&lt;set _verses to $seenVerses&gt;&gt;
 		&lt;&lt;/if&gt;&gt;
